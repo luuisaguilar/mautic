@@ -15,6 +15,11 @@ WORKDIR /var/www/html
 # Copiar archivos del proyecto
 COPY . .
 
+# Configurar permisos adecuados para los directorios de Mautic
+RUN mkdir -p var/cache var/logs var/sessions && \
+    chmod -R 777 var/cache var/logs var/sessions && \
+    chown -R www-data:www-data var/cache var/logs var/sessions
+
 # Instalar dependencias PHP sin ejecutar scripts automáticos
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-scripts
 
@@ -22,5 +27,5 @@ RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-
 RUN npm install && npm run build || true
 RUN yarn install && yarn build || true
 
-# Comando de inicio
+# Definir el comando de inicio
 CMD ["apache2-foreground"]
