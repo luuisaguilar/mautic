@@ -10,6 +10,9 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure zip \
     && docker-php-ext-install pdo pdo_mysql gd mbstring xml zip
 
+# Instalar Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
 # Configurar variables de entorno para evitar problemas de memoria
 ENV PHP_MEMORY_LIMIT=-1
 ENV COMPOSER_MEMORY_LIMIT=-1
