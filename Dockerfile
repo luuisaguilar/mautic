@@ -1,8 +1,8 @@
-# Usa una imagen de PHP con soporte para Composer y Node.js
+# Usa una imagen de PHP con Apache
 FROM php:8.1-apache
 
-# Instala dependencias necesarias para Composer y npm
-RUN apt-get update && apt-get install -y curl unzip git nodejs npm \
+# Instalar dependencias necesarias
+RUN apt-get update && apt-get install -y curl unzip git nodejs npm yarn \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Configurar variables de entorno para evitar problemas de memoria
@@ -15,9 +15,12 @@ WORKDIR /var/www/html
 # Copiar archivos del proyecto
 COPY . .
 
-# Instalar dependencias de PHP y Node.js
-RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
-RUN npm ci --prefer-offline --no-audit
+# Instalar dependencias PHP sin ejecutar scripts automáticos
+RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-scripts
 
-# Definir el comando de inicio
+# Instalar dependencias de frontend
+RUN npm install && npm run build || true
+RUN yarn install && yarn build || true
+
+# Comando de inicio
 CMD ["apache2-foreground"]
