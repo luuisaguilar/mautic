@@ -1,11 +1,12 @@
 # Usa una imagen de PHP con Apache
 FROM php:8.1-apache
 
-# Instalar dependencias necesarias sin forzar una versión específica
+# Instalar dependencias necesarias con versiones compatibles
 RUN apt-get update && apt-get install -y \
     curl unzip git nodejs npm yarn \
     libpng-dev libjpeg-dev libfreetype6-dev \
     libzip-dev libxml2-dev mariadb-client \
+    libonig-dev \
     && docker-php-ext-configure zip \
     && docker-php-ext-install pdo pdo_mysql gd mbstring xml zip
 
