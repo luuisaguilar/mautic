@@ -10,8 +10,13 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure zip \
     && docker-php-ext-install pdo pdo_mysql gd mbstring xml zip
 
-# Instalar Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Instalar Composer globalmente
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
+    chmod +x /usr/local/bin/composer && \
+    ln -s /usr/local/bin/composer /usr/bin/composer
+
+# Verificar que Composer está instalado
+RUN composer --version
 
 # Configurar variables de entorno para evitar problemas de memoria
 ENV PHP_MEMORY_LIMIT=-1
@@ -29,7 +34,7 @@ RUN mkdir -p var/cache var/logs var/sessions && \
     chown -R www-data:www-data var/cache var/logs var/sessions
 
 # Instalar dependencias PHP sin ejecutar scripts automáticos
-RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-scripts
+RUN /usr/local/bin/composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-scripts
 
 # Instalar dependencias de frontend
 RUN npm install && npm run build || true
