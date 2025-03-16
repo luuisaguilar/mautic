@@ -2,8 +2,8 @@
 FROM php:8.1-apache
 
 # Instalar dependencias necesarias
-RUN apt-get update && apt-get install -y curl unzip git nodejs npm yarn \
-    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN apt-get update && apt-get install -y curl unzip git nodejs npm yarn libpng-dev libjpeg-dev libfreetype6-dev libpq-dev libonig-dev libxml2-dev mariadb-client \
+    && docker-php-ext-install pdo pdo_mysql gd mbstring xml zip
 
 # Configurar variables de entorno para evitar problemas de memoria
 ENV PHP_MEMORY_LIMIT=-1
@@ -26,6 +26,9 @@ RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-
 # Instalar dependencias de frontend
 RUN npm install && npm run build || true
 RUN yarn install && yarn build || true
+
+# Configurar el ServerName para evitar advertencias de Apache
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 # Definir el comando de inicio
 CMD ["apache2-foreground"]
