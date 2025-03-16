@@ -1,14 +1,13 @@
 # Usa una imagen de PHP con Apache
 FROM php:8.1-apache
 
-# Instalar dependencias necesarias con versiones compatibles
+# Instalar dependencias necesarias sin forzar una versión específica
 RUN apt-get update && apt-get install -y \
     curl unzip git nodejs npm yarn \
     libpng-dev libjpeg-dev libfreetype6-dev \
-    libzip-dev=1.5.1-0ubuntu1 libxml2-dev mariadb-client \
-    && docker-php-ext-configure zip --with-libzip=/usr/include \
+    libzip-dev libxml2-dev mariadb-client \
+    && docker-php-ext-configure zip \
     && docker-php-ext-install pdo pdo_mysql gd mbstring xml zip
-
 
 # Configurar variables de entorno para evitar problemas de memoria
 ENV PHP_MEMORY_LIMIT=-1
